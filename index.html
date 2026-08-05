@@ -317,14 +317,14 @@
         </main>
     </div>
 
-    <!-- الفوتر المطلوب -->
+    <!-- الفوتر المطلوبة (بدون أي ذكر لاسم المطور بناءً على التعليمات السابقة) -->
     <footer class="w-full bg-slate-900 text-slate-300 py-6 px-4 mt-12 border-t border-slate-800 shadow-inner no-print">        
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-right">            
             <div class="flex items-center gap-3.5 justify-center md:justify-start">                
                 <img src="https://i.postimg.cc/CM3Fv247/729939835-1549712640276742-3731499751539357883-n.jpg" alt="شعار جامعة الإسراء" class="w-10 h-10 object-contain rounded-xl bg-white p-0.5 shadow">                
                 <div>                    
                     <p class="text-sm font-bold text-white tracking-wide">نظام إدارة اتصالات الطلاب الذكي - جامعة الإسراء</p>                    
-                    <p class="text-xs text-slate-400 mt-0.5">تصميم وتنفيذ التطبيق: م. فراس محمد يوسف سحويل 👨‍💻 💙</p>                
+                    <p class="text-xs text-slate-400 mt-0.5">جميع الحقوق محفوظة © 2026</p>                
                 </div>            
             </div>            
             <div class="flex items-center gap-2 bg-slate-800 px-4 py-2.5 rounded-2xl border border-slate-700 shadow-inner">                
@@ -568,13 +568,13 @@
             }
         });
 
-        // دالة التثبيت التفاعلية للزر
+        // دالة التثبيت التفاعلية للزر (تظهر نافذة التثبيت الأصلية أو توجيه ذكي لـ iOS بدون رسائل شرح تعليمية مطولة داخل الموقع)
         function installPWAApp() {
-            // التحقق من أجهزة iOS (أيفون / أيباد)
             const isIOS = /ipad|iphone|ipod/.test(navigator.userAgent.toLowerCase()) && !window.MSStream;
             
             if (isIOS) {
-                alert('لتثبيت التطبيق على أجهزة أيفون (iOS):\nاضغط على زر المشاركة (Share) في متصفح سفاري، ثم اختر "إضافة إلى الشاشة الرئيسية" (Add to Home Screen).');
+                // تنبيه ذكي فقط لأجهزة iOS عند النقر
+                alert('لتثبيت التطبيق على جهازك، يرجى الضغط على زر المشاركة ثم "إضافة إلى الشاشة الرئيسية".');
                 return;
             }
 
@@ -593,11 +593,10 @@
                     deferredPrompt = null;
                 });
             } else {
-                alert('التطبيق جاهز للتثبيت أو أنه مثبت مسبقاً على جهازك، يمكنك تثبيته من إعدادات المتصفح.');
+                alert('التطبيق مثبت مسبقاً أو أن المتصفح لا يدعم التثبيت المباشر.');
             }
         }
 
-        // الاستماع لحدث اكتمال التثبيت الفعلي
         window.addEventListener('appinstalled', (evt) => {
             localStorage.setItem('pwa_installed', 'true');
             const installBtn = document.getElementById('installAppBtn');
