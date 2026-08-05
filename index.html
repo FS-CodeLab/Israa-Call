@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl" class="light">
 <head>
@@ -111,7 +112,7 @@
         </div>
     </div>
 
-    <!-- نافذة التحديث الجديد (PWA Update Popup) -->
+    <!-- نافذة التحديث الجديد -->
     <div id="updateModal" class="update-modal no-print hidden">
         <div class="popup-content bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-800 space-y-4">
             <div class="w-14 h-14 bg-emerald-50 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto text-emerald-600 dark:text-emerald-400 text-2xl shadow-inner animate-bounce">
@@ -119,7 +120,7 @@
             </div>
             <h2 class="text-lg font-extrabold text-emerald-600 dark:text-emerald-400">يتوفر تحديث جديد للتطبيق 🚀</h2>
             <p class="text-xs leading-relaxed text-slate-600 dark:text-slate-300">
-                يوجد تحديث جديد للتطبيق
+                يوجد إصدار جديد يحتوي على تحسينات وتطويرات مهمة، يرجى تحديث التطبيق للحصول على آخر المميزات.
             </p>
             <div class="grid grid-cols-2 gap-2.5 pt-2">
                 <button onclick="executeAppUpdate()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-xl transition shadow-lg text-xs flex items-center justify-center gap-1.5">
@@ -148,7 +149,7 @@
                 </div>
                 <div class="flex justify-between py-1.5 border-b border-slate-100 dark:border-slate-800">
                     <span class="text-slate-500 dark:text-slate-400">رقم الإصدار الحالي:</span>
-                    <span id="displayAppVersion" class="font-bold text-emerald-600 dark:text-emerald-400">Version 1.0.5</span>
+                    <span id="displayAppVersion" class="font-bold text-emerald-600 dark:text-emerald-400">Version 1.0.0</span>
                 </div>
                 <div class="flex justify-between py-1.5">
                     <span class="text-slate-500 dark:text-slate-400">آخر تحديث:</span>
@@ -201,9 +202,13 @@
                 </div>
                 
                 <div class="flex items-center gap-2 flex-wrap">
-                    <div id="installButtonContainer"></div>
+                    <!-- زر تثبيت التطبيق البارز (دائم الظهور لضمان تثبيته على جميع الأجهزة وتنزيله كتطبيق)[cite: 7] -->
+                    <button id="installAppBtn" onclick="installPWAApp()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3.5 py-2 rounded-xl text-xs font-bold shadow transition flex items-center gap-1.5 animate-pulse">
+                        <i class="fa-solid fa-download"></i> تنزيل التطبيق 📲
+                    </button>
+                    <!-- زر معلومات الإصدار -->
                     <button onclick="openAppInfoModal()" class="bg-slate-700 hover:bg-slate-800 text-white px-3 py-2 rounded-xl text-xs font-semibold shadow-sm transition flex items-center gap-1.5" title="معلومات الإصدار">
-                        <i class="fa-solid fa-circle-info"></i> <span id="headerVersionBadge">v1.0.5</span>
+                        <i class="fa-solid fa-circle-info"></i> <span id="headerVersionBadge">v1.0.0</span>
                     </button>
                     <button onclick="openStatsModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3.5 py-2 rounded-xl text-xs font-semibold shadow-sm transition flex items-center gap-1.5">
                         <i class="fa-solid fa-chart-pie"></i> لوحة الإحصائيات
@@ -319,7 +324,7 @@
                 <img src="https://i.postimg.cc/CM3Fv247/729939835-1549712640276742-3731499751539357883-n.jpg" alt="شعار جامعة الإسراء" class="w-10 h-10 object-contain rounded-xl bg-white p-0.5 shadow">                
                 <div>                    
                     <p class="text-sm font-bold text-white tracking-wide">نظام إدارة اتصالات الطلاب الذكي - جامعة الإسراء</p>                    
-                    <p class="text-xs text-slate-400 mt-0.5">نظام تتبّع اتصالات المتطوعين الذكي 💙</p>                
+                    <p class="text-xs text-slate-400 mt-0.5">تصميم وتنفيذ التطبيق: م. فراس محمد يوسف سحويل 👨‍💻 💙</p>                
                 </div>            
             </div>            
             <div class="flex items-center gap-2 bg-slate-800 px-4 py-2.5 rounded-2xl border border-slate-700 shadow-inner">                
@@ -512,11 +517,10 @@
         <span id="toastMessage">تم بنجاح</span>
     </div>
 
-    <!-- ملف التثبيت والتحديث الذكي المدمج -->
-    <script src="./install.js"></script>
     <script>
-        const APP_VERSION = "1.0.5";
+        const APP_VERSION = "1.0.0";
         const LAST_UPDATE_DATE = "2026-08-05";
+        let deferredPrompt = null;
 
         let db;
         let students = [];
@@ -533,6 +537,91 @@
             } else {
                 banner.classList.add('hidden');
             }
+        }
+
+        // PWA Installation Setup (تثبيت التطبيق على جميع الأجهزة)
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            const installBtn = document.getElementById('installAppBtn');
+            if (installBtn) {
+                installBtn.classList.remove('hidden');
+                installBtn.classList.add('flex');
+            }
+        });
+
+        function installPWAApp() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        showToast('تم تثبيت التطبيق بنجاح على جهازك 📲');
+                    }
+                    deferredPrompt = null;
+                });
+            } else {
+                // رسالة ارشادية مخصصة للأجهزة التي لا تدعم التثبيت المباشر بالمتصفح (مثل الأيفون أو المتصفحات العادية)
+                alert('لتثبيت التطبيق على جهازك:\n1. من متصفح سفاري (أيفون): اضغط زر المشاركة (Share) ثم اختر "إضافة إلى الشاشة الرئيسية" (Add to Home Screen).\n2. من متصفح كروم (أندرويد/كمبيوتر): اضغط على القائمة (3 نقاط) ثم اختر "تثبيت التطبيق" أو "إضافة إلى الشاشة الرئيسية".');
+            }
+        }
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./service-worker.js')
+                    .then(reg => {
+                        reg.onupdatefound = () => {
+                            const installingWorker = reg.installing;
+                            if (installingWorker) {
+                                installingWorker.onstatechange = () => {
+                                    if (installingWorker.state === 'installed') {
+                                        if (navigator.serviceWorker.controller) {
+                                            document.getElementById('updateModal').classList.remove('hidden');
+                                        }
+                                    }
+                                };
+                            }
+                        };
+                    })
+                    .catch(err => console.log('Service Worker registration failed:', err));
+            });
+        }
+
+        function executeAppUpdate() {
+            showToast('جاري تحديث ملفات التطبيق...');
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistration().then(reg => {
+                    if (reg && reg.waiting) {
+                        reg.waiting.postMessage({ action: 'skipWaiting' });
+                    }
+                });
+            }
+            localStorage.setItem('app_version_checked', APP_VERSION);
+            setTimeout(() => {
+                window.location.reload(true);
+            }, 1000);
+        }
+
+        function dismissUpdate() {
+            document.getElementById('updateModal').classList.add('hidden');
+            showToast('تم تأجيل التحديث لوقت لاحق ⏳');
+        }
+
+        function openAppInfoModal() {
+            document.getElementById('displayAppVersion').innerText = `Version ${APP_VERSION}`;
+            document.getElementById('displayLastUpdate').innerText = LAST_UPDATE_DATE;
+            document.getElementById('appInfoModal').classList.remove('hidden');
+        }
+
+        function closeAppInfoModal() {
+            document.getElementById('appInfoModal').classList.add('hidden');
+        }
+
+        function checkForUpdatesManual() {
+            closeAppInfoModal();
+            showToast('جاري التحقق من وجود إصدارات جديدة...');
+            setTimeout(() => {
+                showToast('أنت تستخدم أحدث إصدار متوفر حالياً (v1.0.0) 🚀');
+            }, 1200);
         }
 
         function initIndexedDB() {
